@@ -28,8 +28,8 @@ class LoginController {
     try {
       const token = req.header('Authorization');
       const decoded = verify(token as string, secret) as JwtPayload;
-      console.log(decoded);
       const role = await loginService.getRole(decoded.email);
+
       res.status(200).json({ role });
     } catch (e) {
       const error = e as Error;
