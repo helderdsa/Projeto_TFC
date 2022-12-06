@@ -8,6 +8,18 @@ class MatchService {
         { all: true, attributes: { exclude: ['id'] } },
       ],
     });
+    return matchs;
+  };
+
+  getMatchsQuery = async (inProgress: string) => {
+    const status = inProgress === 'true';
+    const matchs = await Match.findAll({
+      include: [
+        { all: true, attributes: { exclude: ['id'] } },
+      ],
+      where: { inProgress: status },
+    });
+    console.log(inProgress);
 
     return matchs;
   };
