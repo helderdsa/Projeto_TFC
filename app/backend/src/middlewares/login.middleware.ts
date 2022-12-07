@@ -29,7 +29,7 @@ export const authToken = async (req: Request, res: Response, next: NextFunction)
 
     next();
   } catch {
-    res.status(401).json({ message: 'Token Invalido' });
+    res.status(401).json({ message: 'Token must be a valid token' });
   }
 };
 
