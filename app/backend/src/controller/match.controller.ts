@@ -33,6 +33,15 @@ class MatchController {
 
     res.status(200).json({ message: 'Finished' });
   };
+
+  static editMatchGoals = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+
+    await MatchService.editMatchGoals(homeTeamGoals, awayTeamGoals, id);
+
+    res.status(200).json({ message: 'match edited' });
+  };
 }
 
 export default MatchController;

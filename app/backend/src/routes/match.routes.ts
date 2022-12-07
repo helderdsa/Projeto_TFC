@@ -8,5 +8,6 @@ const route = express.Router();
 route.get('/', MatchController.getAllMatchs);
 route.post('/', authToken, sameTeamValidation, teamExistOnDB, MatchController.createMatch);
 route.patch('/:id/finish', authToken, MatchController.finishMatch);
+route.patch('/:id/', authToken, MatchController.editMatchGoals);
 
 export default route;

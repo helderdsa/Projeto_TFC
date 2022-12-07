@@ -40,6 +40,10 @@ class MatchService {
 
     return finichedMatch;
   };
+
+  static editMatchGoals = async (homeGoals: string, awayGoals: string, id: string) => {
+    await Match.update({ homeTeamGoals: homeGoals, awayTeamGoals: awayGoals }, { where: { id } });
+  };
 }
 
 export default MatchService;
