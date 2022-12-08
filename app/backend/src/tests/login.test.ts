@@ -60,6 +60,6 @@ describe('Tesstes da camada service do login', () => {
       .set('Authorization', 'wrong token')
       
     expect(chaiHttpResponse.status).to.be.equal(401)
-    expect(chaiHttpResponse.body.message).to.be.equal("Token Invalido")
+    expect(chaiHttpResponse.body.message).to.be.equal("Token must be a valid token")
   })
 })
