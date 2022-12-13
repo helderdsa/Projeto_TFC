@@ -30,7 +30,7 @@ class LeaderboardService {
     return finishedMatches;
   };
 
-  handleMatchData = (lboard: ILeaderboard, match: IMatch) => {
+  handleMatchAsHome = (lboard: ILeaderboard, match: IMatch) => {
     const leaderboard = lboard;
     if (match.teamHome?.teamName === leaderboard.name) {
       leaderboard.goalsFavor += match.homeTeamGoals;
@@ -49,10 +49,39 @@ class LeaderboardService {
     return leaderboard;
   };
 
-  insertLeaderboardData = (leaderboard: ILeaderboard, matches: IMatch[]) => {
+  handleMatchAsAway = (lboard: ILeaderboard, match: IMatch) => {
+    const leaderboard = lboard;
+    if (match.teamAway?.teamName === leaderboard.name) {
+      leaderboard.goalsFavor += match.awayTeamGoals;
+      leaderboard.goalsOwn += match.homeTeamGoals;
+      leaderboard.totalGames += 1;
+      if (match.homeTeamGoals === match.awayTeamGoals) {
+        leaderboard.totalDraws += 1;
+        leaderboard.totalPoints += 1;
+      } else if (match.homeTeamGoals < match.awayTeamGoals) {
+        leaderboard.totalVictories += 1;
+        leaderboard.totalPoints += 3;
+      } else {
+        leaderboard.totalLosses += 1;
+      }
+    }
+    return leaderboard;
+  };
+
+  insertLeaderboardHome = (leaderboard: ILeaderboard, matches: IMatch[]) => {
     let lboard = leaderboard;
     matches.forEach((match) => {
-      lboard = this.handleMatchData(lboard, match);
+      lboard = this.handleMatchAsHome(lboard, match);
+    });
+    lboard.goalsBalance = lboard.goalsFavor - lboard.goalsOwn;
+    lboard.efficiency = ((lboard.totalPoints / (lboard.totalGames * 3)) * 100).toFixed(2);
+    return lboard;
+  };
+
+  insertLeaderboardAway = (leaderboard: ILeaderboard, matches: IMatch[]) => {
+    let lboard = leaderboard;
+    matches.forEach((match) => {
+      lboard = this.handleMatchAsAway(lboard, match);
     });
     lboard.goalsBalance = lboard.goalsFavor - lboard.goalsOwn;
     lboard.efficiency = ((lboard.totalPoints / (lboard.totalGames * 3)) * 100).toFixed(2);
@@ -78,10 +107,27 @@ class LeaderboardService {
     return 0;
   };
 
-  getTeamData = async () => {
+  getTeamDataAsHome = async () => {
     const fm = await this.getFineshedMatches();
     let lb = await this.generateLeaderboard();
-    lb = lb.map((team) => this.insertLeaderboardData(team, fm));
+    lb = lb.map((team) => this.insertLeaderboardHome(team, fm));
+    lb = lb.sort(this.sortLeaderboard);
+    return lb;
+  };
+
+  getTeamDataAsAway = async () => {
+    const fm = await this.getFineshedMatches();
+    let lb = await this.generateLeaderboard();
+    lb = lb.map((team) => this.insertLeaderboardAway(team, fm));
+    lb = lb.sort(this.sortLeaderboard);
+    return lb;
+  };
+
+  getAllTeamData = async () => {
+    const fm = await this.getFineshedMatches();
+    let lb = await this.generateLeaderboard();
+    lb = lb.map((team) => this.insertLeaderboardHome(team, fm));
+    lb = lb.map((team) => this.insertLeaderboardAway(team, fm));
     lb = lb.sort(this.sortLeaderboard);
     return lb;
   };
